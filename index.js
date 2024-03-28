@@ -15,7 +15,7 @@ const app = express();
 const port = process.env.PORT || 5001;
 const uri =
   "mongodb+srv://pioneer:RncaygBTR6ZZhrGS@cluster0.go1mcti.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-let userCollection;
+// let userCollection;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -65,7 +65,10 @@ app.post("/register", async (req, res) => {
   }
 
   try {
+    
     await client.connect();
+
+    const userCollection = client.db("pioneer_lab").collection("users");
 
     const existingUser = await userCollection.findOne({ username });
     if (existingUser) {
@@ -123,6 +126,9 @@ app.post("/login", async (req, res) => {
 
   try {
     await client.connect();
+
+    const userCollection = client.db("pioneer_lab").collection("users");
+
     // Find the user by username
     const user = await userCollection.findOne({ username });
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -179,7 +185,6 @@ app.post("/login", async (req, res) => {
 app.get("/publicapi", async (req, res) => {
   try {
     const { category, limit } = req.query;
-    console.log(req.query);
     let apiUrl = `https://api.publicapis.org/entries?category=${
       category ? category : ""
     }`;
@@ -235,22 +240,29 @@ app.get("/protected", authenticateToken, (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Pioneer Lab!");
+  res.json({message:"Welcome to Pioneer Lab!"});
 });
 
-async function run() {
-  try {
-    await client.connect();
-    userCollection = client.db("pioneer_lab").collection("users");
 
     app.listen(port, () => {
       console.log(`Server is running at http://localhost:${port}`);
     });
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-  } finally {
-    await client.close();
-  }
-}
 
-run().catch(console.dir);
+
+
+// async function run() {
+//   try {
+//     await client.connect();
+//     userCollection = client.db("pioneer_lab").collection("users");
+
+//     app.listen(port, () => {
+//       console.log(`Server is running at http://localhost:${port}`);
+//     });
+//   } catch (error) {
+//     console.error("Error connecting to the database:", error);
+//   } finally {
+//     await client.close();
+//   }
+// }
+
+// run().catch(console.dir);
