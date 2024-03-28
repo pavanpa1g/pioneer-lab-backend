@@ -5,17 +5,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
-
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
 
 require("dotenv").config();
 const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-
 
 
 const port = process.env.PORT || 5001;
@@ -32,11 +26,11 @@ const client = new MongoClient(uri, {
 });
 
 
+app.use(cors());
+app.use(express.json());
+
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-
-
-
 
 /**
  * @swagger
@@ -62,9 +56,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *       500:
  *         description: Failed to register user
  */
-
-
-
 
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
@@ -93,8 +84,6 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ error: "Failed to register user" });
   }
 });
-
-
 
 /**
  * @swagger
@@ -152,10 +141,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
-
-
-
 /**
  * @swagger
  * /publicapi:
@@ -194,14 +179,13 @@ app.post("/login", async (req, res) => {
 app.get("/publicapi", async (req, res) => {
   try {
     const { category, limit } = req.query;
-    console.log(req.query)
+    console.log(req.query);
     let apiUrl = `https://api.publicapis.org/entries?category=${
       category ? category : ""
     }`;
 
     // const encodedCategory = category ? encodeURIComponent(category) : "";
     // console.log(encodedCategory);
-
 
     // Fetch data from the public API with query parameters
     const response = await axios.get(apiUrl);
@@ -226,15 +210,11 @@ function authenticateToken(req, res, next) {
   if (token == null) return res.status(401).json({ error: "Invalid token" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: err.message });;
+    if (err) return res.status(403).json({ error: err.message });
     req.user = user;
     next();
   });
 }
-
-
-
-
 
 /**
  * @swagger
@@ -254,6 +234,9 @@ app.get("/protected", authenticateToken, (req, res) => {
   res.json({ message: "Protected route accessed successfully" });
 });
 
+app.get("/", (req, res) => {
+  res.send("Welcome to Pioneer Lab!");
+});
 
 async function run() {
   try {
@@ -263,10 +246,6 @@ async function run() {
     app.listen(port, () => {
       console.log(`Server is running at http://localhost:${port}`);
     });
-
-    app.get("/", (req, res) => {
-      res.send("Welcome to Pioneer Lab!");
-    });
   } catch (error) {
     console.error("Error connecting to the database:", error);
   } finally {
@@ -275,4 +254,3 @@ async function run() {
 }
 
 run().catch(console.dir);
-
