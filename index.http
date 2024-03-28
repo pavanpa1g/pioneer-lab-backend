@@ -1,1 +1,0 @@
-GET http://localhost:5001/publicapi?category=Art %26 Design&limit=10
