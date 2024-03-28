@@ -4,7 +4,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
-const Web3 = require("web3");
+
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
@@ -16,9 +16,6 @@ app.use(cors());
 app.use(express.json());
 
 
-// const web3 = new Web3(
-//   "https://mainnet.infura.io/v3/2391adf099a24486b14f9555c027b10e"
-// );
 
 
 const port = process.env.PORT || 5001;
@@ -258,64 +255,6 @@ app.get("/protected", authenticateToken, (req, res) => {
 });
 
 
-/**
- * @swagger
- * /balance/{address}:
- *   get:
- *     summary: Get the balance of an Ethereum account
- *     parameters:
- *       - in: path
- *         name: address
- *         required: true
- *         description: Ethereum account address
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 address:
- *                   type: string
- *                   description: Ethereum account address
- *                 balance:
- *                   type: string
- *                   description: Account balance in Ether
- *       400:
- *         description: Bad request
- *       500:
- *         description: Internal server error
- */
-
-
-
-// Define route to retrieve account balance
-// app.get("/balance/:address", async (req, res) => {
-//   try {
-//     const address = req.params.address;
-
-//     // Check if address is a valid Ethereum address
-//     if (!web3.utils.isAddress(address)) {
-//       return res.status(400).json({ error: "Invalid Ethereum address" });
-//     }
-
-//     // Fetch account balance
-//     const balance = await web3.eth.getBalance(address);
-
-//     // Convert balance from Wei to Ether
-//     const balanceInEther = web3.utils.fromWei(balance, "ether");
-
-//     // Return the balance
-//     res.json({ address, balance: balanceInEther });
-//   } catch (error) {
-//     console.error("Error fetching balance:", error);
-//     res.status(500).json({ error: "Failed to fetch balance" });
-//   }
-// });
-
 async function run() {
   try {
     await client.connect();
@@ -337,7 +276,3 @@ async function run() {
 
 run().catch(console.dir);
 
-
-
-
-// 2391adf099a24486b14f9555c027b10e
